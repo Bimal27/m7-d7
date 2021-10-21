@@ -1,6 +1,4 @@
-const initialState = {
-    favourites: []
-}
+import { initialState } from '../store'
 
 export default function mainReducer(state = initialState, action) {
 

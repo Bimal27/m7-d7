@@ -1,10 +1,26 @@
 import React from 'react'
-import { Container, Row, Col, Form } from 'react-bootstrap'
+import { Container, Row, Col, Form, Alert, Spinner} from 'react-bootstrap'
 import JobResult from './JobResult'
 import uniqid from 'uniqid'
 import { Link } from 'react-router-dom'
 
-export default class MainSearch extends React.Component {
+import { connect } from 'react-redux'
+
+import { getJobAction } from "../actions";
+
+const mapStateToProps = (state) => ({
+  jobs: state.company.companyName,
+  isError: state.company.isError,
+  isLoading: state.company.isLoading
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  getJobs: () => {
+    dispatch(getJobAction())
+  }
+})
+
+ class MainSearch extends React.Component {
 
     state = {
         query: '',
@@ -35,7 +51,11 @@ export default class MainSearch extends React.Component {
     }
 
     render() {
-        return (
+        return  this.props.isError ?(
+            <Alert variant="danger">Error fetching books in stock</Alert>
+            ) : this.props.isLoading ? (
+                <Spinner variant="success" animation="border" />
+              ) : (
             <Container>
                 <Row>
                     <Col xs={10} className='mx-auto my-3'>
@@ -57,3 +77,5 @@ export default class MainSearch extends React.Component {
         )
     }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainSearch)
