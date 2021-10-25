@@ -1,39 +1,36 @@
 import React from 'react'
-import { Container, Row, Col } from 'react-bootstrap'
+import {Container, Row, Col} from 'react-bootstrap'
 import Job from './Job'
 import uniqid from 'uniqid'
-import { connect } from 'react-redux'
 
-import { getJobAction } from "../actions";
+export default class CompanySearchResults extends React.Component {
 
-const mapStateToProps = (state) => ({
-  jobs: state.company.companyName,
-  isError: state.company.isError,
-  isLoading: state.company.isLoading
-})
-
-const mapDispatchToProps = (dispatch) => ({
-  getJobs: () => {
-    dispatch(getJobAction())
-  }
-})
-
- class CompanySearchResults extends React.Component {
-
-    componentDidMount() {
-        this.props.getJobs()
+    state = {
+        jobs: []
     }
 
-    render() {
+    componentDidMount() {
+        this.getJobs()
+    }
+
+    baseEndpoint = 'https://strive-jobs-api.herokuapp.com/jobs?company='
+
+    getJobs = async () => {
+        const response = await fetch(this.baseEndpoint + this.props.match.params.companyName)
+        const { data } = await response.json()
+
+        this.setState({ jobs: data })
+    }
+    
+    render(){
         return <Container>
             <Row>
                 <Col>
                     {
-                        this.props.company.jobs.map(jobData => <Job key={uniqid()} data={jobData} />)
+                        this.state.jobs.map( jobData => <Job key={uniqid()} data={jobData} />)
                     }
                 </Col>
             </Row>
         </Container>
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(CompanySearchResults)
